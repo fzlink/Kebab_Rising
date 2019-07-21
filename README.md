@@ -1,1 +1,3 @@
 # Kebab_Rising
+
+Deneme 
