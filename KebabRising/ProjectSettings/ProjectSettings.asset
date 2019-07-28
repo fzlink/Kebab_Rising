@@ -606,10 +606,10 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 6
-  cloudProjectId: 
+  cloudProjectId: 48ad4e33-c4d2-48ba-986d-e0c35c4ba9de
   framebufferDepthMemorylessMode: 0
-  projectName: 
-  organizationId: 
+  projectName: KebabRising
+  organizationId: jeyarar-software
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
