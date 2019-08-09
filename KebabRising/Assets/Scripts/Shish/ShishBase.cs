@@ -5,10 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class ShishBase : MonoBehaviour
 {
-	protected int maxNumberOfSlots { get; set; }
+	//Make them public if you need.
+
+	protected int MaxNumberOfSlots { get; set; }
 	//protected Slot[] Slots { get; set; }
-	protected int maxNumberOfBounces { get; set; }
-	protected Vector2 moveSpeed { get; set; }
-	protected bool canBreakGlass { get; set; }
-	protected bool canBurn { get; set; }
+	protected int MaxNumberOfBounces { get; set; }
+	protected float GravityScale { get; set; } 
+	protected Vector2 MoveSpeed { get; set; }
+	protected bool CanBreakGlass { get; set; }
+	protected bool CanBurn { get; set; }
 }
