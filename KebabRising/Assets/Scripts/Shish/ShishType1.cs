@@ -34,24 +34,18 @@ public class ShishType1 : ShishBase
 
     private void TouchDrag()
     {
+		float maxScreenPosX = 5.3f;
+		float minScreenPosY = -3.5f;
         if (Input.GetMouseButton(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            //gameObject.transform.rotation = Vector3.Angle(Input.mousePosition, gameObject.transform.position);
-
-            //gameObject.transform.rotation = Quaternion.LookRotation(new Vector3(0, 0, 1), Input.mousePosition * -1);
-            Debug.Log(Input.mousePosition);
-            //Debug.Log(gameObject.transform.rotation);
-
             Vector3 mousePos = Input.mousePosition;
 
-            //Mathf.Clamp(mousePos.y, 55, 1000);
             Vector3 screenPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, transform.position.z - Camera.main.transform.position.z));
 
-            
-            gameObject.transform.eulerAngles = new Vector3(0,0,Mathf.Clamp(    Mathf.Atan2(  (screenPos.y - transform.position.y), (screenPos.x - transform.position.x)   ), 1.57f,3.14f  )   * Mathf.Rad2Deg);
-            
+			screenPos.x = (screenPos.x > maxScreenPosX ? maxScreenPosX : screenPos.x); 
+			screenPos.y = (screenPos.y < minScreenPosY ? minScreenPosY : screenPos.y); 
+
+            gameObject.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2((screenPos.y - transform.position.y), (screenPos.x - transform.position.x)) * Mathf.Rad2Deg);    
         }
     }
 
