@@ -11,7 +11,8 @@ public class ShishBase : MonoBehaviour
 	//protected Slot[] Slots { get; set; }
 	protected int MaxNumberOfBounces { get; set; }
 	protected float GravityScale { get; set; } 
-	protected Vector2 MoveSpeed { get; set; }
+	protected float MoveSpeed { get; set; }
+	protected float MaxMoveSpeed { get; set; }
 	protected bool CanBreakGlass { get; set; }
 	protected bool CanBurn { get; set; }
 }
