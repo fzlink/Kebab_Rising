@@ -29,19 +29,20 @@ public class ShishType1 : ShishBase
 	private Vector3 clickPosition;	//first click position
 	private float stretchAmount = 0f;
 	private bool isFirstClick = false;
-	//will be used to calculate same max stretch for different screen sizes.
 
-	RectTransform rectTransform;
 	void Start()
 	{
 		InitializeBaseProperties();
+		PlaceShish();
 		remainingBounces = maxNumberOfBounces;
-		rectTransform = GetComponent<RectTransform>();
-		maxStretch = Vector2.Distance(new Vector2 (0,Screen.height), rectTransform.position) / screenSizeMultiplier;
 	}
 
 	void Update()
 	{
+		if(remainingBounces == -1)
+		{
+			DestroyShish();
+		}
 		if (Input.GetMouseButtonDown(0))
 		{
 			isFirstClick = true;
@@ -50,9 +51,8 @@ public class ShishType1 : ShishBase
         {
 			RotateShish();
 			StretchShish();
-		
 			//TODO	Delete when you visualize shish stretch power.
-			slider.GetComponent<Slider>().value = stretchAmount / maxStretch * maxMoveSpeed;
+			slider.GetComponent<Slider>().value = stretchAmount;
 			////////////////////////////////////////////////
 
 		}
@@ -68,7 +68,7 @@ public class ShishType1 : ShishBase
 	}
 
 	//Initializes base class properties when object created.
-    void InitializeBaseProperties()
+    private void InitializeBaseProperties()
 	{
 		base.MaxNumberOfSlots = maxNumberOfSlots;
 		base.MaxNumberOfBounces = maxNumberOfBounces;
@@ -77,6 +77,23 @@ public class ShishType1 : ShishBase
 		base.MaxMoveSpeed = maxMoveSpeed;
 		base.CanBreakGlass = canBreakGlass;
 		base.CanBurn = canBurn;
+	}
+
+	//to position the shish correctly for different screen sizes/resolutions.
+	private void PlaceShish()
+	{
+		//get 2d screen size
+		Rect viewportRect = Camera.main.pixelRect; 
+
+		//pick a point at bottom right corner, you might need to adjust z-axis part if you change camera's position on Z
+		Vector3 newPos = new Vector3(viewportRect.xMax, viewportRect.yMin, Mathf.Abs(Camera.main.transform.position.z));		
+		newPos = Camera.main.ScreenToWorldPoint(newPos);
+
+		//leave room for the size of our shish object based on sprite size in world units
+		//add small offset to prevent collision between walls and shish.
+		newPos.x -= GetComponent<SpriteRenderer>().bounds.extents.x + 0.1f;
+		newPos.y += GetComponent<SpriteRenderer>().bounds.extents.y + 0.1f;
+		transform.position = newPos;
 	}
 
     private void RotateShish()
@@ -90,37 +107,29 @@ public class ShishType1 : ShishBase
 			clickPosition = mousePos;
 			isFirstClick = false;
 		}
-
-		screenPos.x = (screenPos.x > maxScreenPosX ? maxScreenPosX : screenPos.x); 
-		screenPos.y = (screenPos.y < minScreenPosY ? minScreenPosY : screenPos.y); 
-
-
-		rectTransform.eulerAngles = new Vector3(0, 0, Mathf.Atan2((mousePos.y - rectTransform.position.y), (mousePos.x - rectTransform.position.x)) * Mathf.Rad2Deg);
-		if(rectTransform.eulerAngles.z > 180)
-		{
-			rectTransform.eulerAngles = new Vector3 (0, 0, 180);
-		}
-		else if(rectTransform.eulerAngles.z < 90)
-		{
-			rectTransform.eulerAngles = new Vector3 (0, 0, 90);
-		}
+	
+		transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2((screenPos.y - transform.position.y), (screenPos.x - transform.position.x)) * Mathf.Rad2Deg);
 
 		//Clamp shish's rotation
-		Vector3 tmpRotation = rectTransform.eulerAngles;
-		Mathf.Clamp(tmpRotation.z, 90, 180);
-		rectTransform.eulerAngles = tmpRotation;
+		Vector3 tmpRotation = transform.eulerAngles;
+		tmpRotation.z = Mathf.Clamp(tmpRotation.z, 90, 180);
+		transform.eulerAngles = tmpRotation;
     }
 
-	
-	///TODO	Delete when you visualize shish stretch power.
+	//TODO	Delete when you visualize shish stretch power.
 	public GameObject slider;
 	/////////////////////////
 	
 	private void StretchShish()
 	{
-		stretchAmount = Vector3.Distance(clickPosition, rectTransform.position) - Vector3.Distance(Input.mousePosition, rectTransform.position);
-
+		Vector3 posInScreen = Camera.main.WorldToScreenPoint(transform.position);
+		stretchAmount = Vector3.Distance(clickPosition, posInScreen) - Vector3.Distance(Input.mousePosition, posInScreen);
 		stretchAmount = Mathf.Clamp(stretchAmount, 0, maxStretch);
+	}
+	
+	private void CalculateMoveSpeed()
+	{
+		moveSpeed = stretchAmount / maxStretch * maxMoveSpeed;
 	}
 
 	private void MoveShish()
@@ -133,38 +142,15 @@ public class ShishType1 : ShishBase
 		if(other.gameObject.tag == "WallUpDown")
 		{
 			transform.eulerAngles = new Vector3(180-transform.eulerAngles.x, 180-transform.eulerAngles.y, 180-transform.eulerAngles.z);
+			--remainingBounces;
 		}
 		else if(other.gameObject.tag == "WallLeftRight")
 		{
 			transform.eulerAngles = new Vector3(0, 0, 180-transform.eulerAngles.z);
+			--remainingBounces;
 		}
 	}
 
-
-
-    //private void TouchControl()
-    //{
-    //    if (Input.GetMouseButtonDown(0))
-    //        isClicked = true;
-
-    //    if (isClicked)
-    //    {
-    //        //Debug.Log("HELEOLOELOEL");
-    //        Vector2 angle = new Vector2(-1, 1);
-    //        float moveSpeedX = angle.x * 3;
-    //        float moveSpeedY = angle.y * 3;
-
-    //        gameObject.transform.position += new Vector3(moveSpeedX, moveSpeedY, 0) * Time.fixedDeltaTime;
-
-    //    }
-    //}
-
-
-
-	private void CalculateMoveSpeed()
-	{
-		moveSpeed = stretchAmount / maxStretch * maxMoveSpeed;
-	}
 
 	private void Burn()
 	{
