@@ -30,13 +30,22 @@ public class ShishType1 : ShishBase
 	private float stretchAmount = 0f;
 	private bool isFirstClick = false;
 
+
+	private float rayDistance;
 	void Start()
 	{
 		InitializeBaseProperties();
 		PlaceShish();
 		remainingBounces = maxNumberOfBounces;
-	}
 
+	}
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		//Gizmos.DrawLine(transform.position, transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f));
+		Gizmos.DrawLine(transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f) , (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f)));
+	}
+	Vector3 newDirection;
 	void Update()
 	{
 		if(remainingBounces == -1)
@@ -66,7 +75,6 @@ public class ShishType1 : ShishBase
 			MoveShish();
 		}
 	}
-
 	//Initializes base class properties when object created.
     private void InitializeBaseProperties()
 	{
@@ -141,17 +149,33 @@ public class ShishType1 : ShishBase
 	{
 		if(other.gameObject.tag == "WallUpDown")
 		{
-			transform.eulerAngles = new Vector3(180-transform.eulerAngles.x, 180-transform.eulerAngles.y, 180-transform.eulerAngles.z);
+	//		transform.eulerAngles = new Vector3(180-transform.eulerAngles.x, 180-transform.eulerAngles.y, 180-transform.eulerAngles.z);
+			float xOffset = (transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f) - (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f))).x;
+			xOffset = Mathf.Abs(xOffset);
+			xOffset *= Mathf.Sign(GetComponent<Rigidbody2D>().velocity.x);
+			//transform.position = new Vector2(transform.position.x + xOffset, transform.position.y);
+			Vector3 eulerAngles = transform.eulerAngles;
+			eulerAngles.z += 2 * (180 - eulerAngles.z);
+			transform.eulerAngles = eulerAngles;
 			--remainingBounces;
 		}
 		else if(other.gameObject.tag == "WallLeftRight")
 		{
-			transform.eulerAngles = new Vector3(0, 0, 180-transform.eulerAngles.z);
+			float yOffset = (transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f) - (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f))).y;
+			//transform.position = new Vector2(transform.position.x, transform.position.y + yOffset);
+			Vector3 eulerAngles = transform.eulerAngles;
+			eulerAngles.z = 180 - eulerAngles.z;
+			transform.eulerAngles = eulerAngles;
 			--remainingBounces;
 		}
 	}
 
-
+	 void OnCollisionEnter2D(Collision2D collision) {
+        foreach (ContactPoint2D contact in collision.contacts) {
+            Debug.DrawRay(contact.point, contact.normal, Color.white);
+        }
+			//transform.RotateAround(collision.GetContact(0).point, -Vector3.forward, -180 - 2*(180-transform.eulerAngles.z));
+	}
 	private void Burn()
 	{
 		GetComponent<SpriteRenderer>().sprite = burntShishSprite;
@@ -166,11 +190,11 @@ public class ShishType1 : ShishBase
 		//shish destruction related things will go here(animation, sound, etc.)
 	}
 
-	void OnCollisionEnter2D(Collision2D other)
-	{
-		if(canBurn && other.collider.CompareTag("Fire"))
-		{
-			Burn();
-		}
-	}
+	//void OnCollisionEnter2D(Collision2D other)
+	//{
+	//	if(canBurn && other.collider.CompareTag("Fire"))
+	//	{
+	//		Burn();
+	//	}
+	//}
 }
