@@ -7,15 +7,17 @@ using UnityEngine.UI;
 public class ShishType1 : ShishBase
 {
 	[Header("Main Properties")][Space]
-	[SerializeField] [Range(0,10)] private int maxNumberOfSlots = 0;
+	[SerializeField] [Range(0,10)] private int maxNumberOfSlots = 3;
 	[SerializeField] [Range(0,100)] private int maxNumberOfBounces = 0;
 	[SerializeField] [Range(0,3)] private float gravityScale = 0;
 	[SerializeField] private float moveSpeed;
 	[SerializeField] private float maxMoveSpeed;
 	[SerializeField] private bool canBreakGlass;
 	[SerializeField] private bool canBurn;
+    [SerializeField] GameObject exslot;
 
 	private int remainingBounces;
+    private int currentNumOfSlots = 0;
 
 	[Header("Other Physics")][Space]
 	[SerializeField] private Sprite burntShishSprite;
@@ -34,17 +36,50 @@ public class ShishType1 : ShishBase
 	private float rayDistance;
 	void Start()
 	{
+        InstantiateSlots();
+        InstantiateSlots();
+        InstantiateSlots();
 		InitializeBaseProperties();
 		PlaceShish();
 		remainingBounces = maxNumberOfBounces;
 
 	}
-	void OnDrawGizmos()
+
+    private void InstantiateSlots()
+    {
+        //Vector2 slotPos = new Vector2((transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f)).x, 0.05f);
+
+        //Instantiate(exslot,new Vector3(0,0,0),transform.rotation,transform);
+        //Debug.Log(new Vector3(slotPos.x, slotPos.y, 0));
+
+        float distance = Vector3.Distance(transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.25f), (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.25f)));
+        //distance = Mathf.Floor(distance);
+        distance = Mathf.Round(distance * 10f) / 10f;
+        float slotMargin = distance / maxNumberOfSlots;
+        
+        GameObject childObj = Instantiate(exslot);
+        childObj.transform.parent = transform;
+        childObj.transform.localPosition = new Vector3(-(distance/2) + (currentNumOfSlots * slotMargin), 0, -1);
+        currentNumOfSlots++;
+        childObj.transform.localRotation = transform.rotation;
+        childObj.transform.localScale = Vector3.one;
+        
+       
+
+
+        Debug.Log(distance);
+    }
+
+
+
+    void OnDrawGizmos()
 	{
 		Gizmos.color = Color.red;
 		//Gizmos.DrawLine(transform.position, transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f));
 		Gizmos.DrawLine(transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f) , (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f)));
-	}
+        Debug.Log(new Vector2(  (transform.position + transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f)  ).x, (transform.position - transform.right * (GetComponent<PolygonCollider2D>().bounds.extents.magnitude - 0.05f) ).x));
+
+    }
 	Vector3 newDirection;
 	void Update()
 	{

@@ -620,13 +620,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36d534be3a1320d4880a895c2f3a5b4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxNumberOfSlots: 0
+  maxNumberOfSlots: 3
   maxNumberOfBounces: 100
   gravityScale: 0
   moveSpeed: 0
   maxMoveSpeed: 25
   canBreakGlass: 0
   canBurn: 0
+  exslot: {fileID: 9152624867005423609, guid: 05f2cf7d26001c34f81ea4f09d944639, type: 3}
   burntShishSprite: {fileID: 21300000, guid: f4a64603c3b61534b84cadab9ba61eb3, type: 3}
   maxScreenPosX: 5.3
   minScreenPosY: -3.5
@@ -722,13 +723,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 938352200}
-  m_LocalRotation: {x: 0.0033297176, y: 0.0013792141, z: 0.9238736, w: 0.38268095}
+  m_LocalRotation: {x: 0, y: 0.0036040603, z: 0, w: 0.99999356}
   m_LocalPosition: {x: 1.968, y: -4.216, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0.41300002, z: 135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0.41300002, z: 0}
 --- !u!50 &938352205
 Rigidbody2D:
   serializedVersion: 4
